@@ -1,7 +1,7 @@
 import pandas as pd
 
 from database import batch_update_distances, fetch_pending, get_connection, get_db_config
-from googletools import buscar_google_maps
+from googletools import get_distance_from_google
 
 VERSION = "ßeta"
 CSV_PATH = "distancias.csv"
@@ -77,7 +77,7 @@ def run():
         dist_km = get_distance_from_cache(df, route_key)
 
         if dist_km is None:
-            dist_km = buscar_google_maps(
+            dist_km = get_distance_from_google(
                 row["origem"], row["uf_origem"], row["destino"], row["uf_destino"]
             )
             if dist_km is not None:
