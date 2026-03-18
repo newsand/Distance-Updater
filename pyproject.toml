@@ -1,0 +1,17 @@
+[project]
+name = "distance-updater"
+version = "0.1.0-beta"
+description = "Bulk distance updater for solicitacao table using CSV cache and Google Maps API"
+requires-python = ">=3.13"
+dependencies = [
+    "pandas",
+    "psycopg2-binary",
+    "python-dotenv",
+    "pydantic",
+    "requests",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+]
