@@ -24,3 +24,4 @@
 
 - nao use abreviacoes e acronimos.
 
+-sempre adicione/mantenha uma linha em branco no final do arquivo

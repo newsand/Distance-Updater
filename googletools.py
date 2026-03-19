@@ -1,6 +1,9 @@
+import logging
 import os
 
 import requests
+
+logger = logging.getLogger(__name__)
 
 
 def get_distance_from_google(
@@ -9,7 +12,7 @@ def get_distance_from_google(
     """Query Google Distance Matrix API and return distance in km, or None on failure."""
     api_key = os.getenv("GOOGLE_API_KEY")
     if not api_key:
-        print("GOOGLE_API_KEY not configured")
+        logger.error("GOOGLE_API_KEY not configured")
         return None
 
     origin_city = str(origin_city).strip() if origin_city else ""
@@ -39,6 +42,6 @@ def get_distance_from_google(
                     distance_km = element["distance"]["value"] / 1000
                     return round(distance_km, 1)
     except Exception as e:
-        print(f"Google API error: {e}")
+        logger.error("Google API error: %s", e)
 
     return None
