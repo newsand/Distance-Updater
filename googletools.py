@@ -1,40 +1,47 @@
+import logging
 import os
+
 import requests
 
-def buscar_google_maps(cidade_origem, uf_origem, cidade_destino, uf_destino):
+logger = logging.getLogger(__name__)
+
+
+def get_distance_from_google(
+    origin_city: str, origin_uf: str, dest_city: str, dest_uf: str
+) -> float | None:
+    """Query Google Distance Matrix API and return distance in km, or None on failure."""
     api_key = os.getenv("GOOGLE_API_KEY")
     if not api_key:
-        print("❌ ERRO: Configure GOOGLE_API_KEY!")
+        logger.error("GOOGLE_API_KEY not configured")
         return None
-    
-    # Limpa espaços
-    cidade_origem = str(cidade_origem).strip() if cidade_origem else ""
-    uf_origem = str(uf_origem).strip() if uf_origem else ""
-    cidade_destino = str(cidade_destino).strip() if cidade_destino else ""
-    uf_destino = str(uf_destino).strip() if uf_destino else ""
-    
-    if not all([cidade_origem, uf_origem, cidade_destino, uf_destino]):
+
+    origin_city = str(origin_city).strip() if origin_city else ""
+    origin_uf = str(origin_uf).strip() if origin_uf else ""
+    dest_city = str(dest_city).strip() if dest_city else ""
+    dest_uf = str(dest_uf).strip() if dest_uf else ""
+
+    if not all([origin_city, origin_uf, dest_city, dest_uf]):
         return None
-    
+
     url = "https://maps.googleapis.com/maps/api/distancematrix/json"
     params = {
-        "origins": f"{cidade_origem},{uf_origem},BR",
-        "destinations": f"{cidade_destino},{uf_destino},BR",
+        "origins": f"{origin_city},{origin_uf},BR",
+        "destinations": f"{dest_city},{dest_uf},BR",
         "key": api_key,
         "language": "pt-BR",
-        "units": "metric"
+        "units": "metric",
     }
-    
+
     try:
         resp = requests.get(url, params=params, timeout=15)
         if resp.ok:
             data = resp.json()
-            if data.get('status') == 'OK':
-                elemento = data['rows'][0]['elements'][0]
-                if elemento.get('status') == 'OK':
-                    distancia_km = elemento['distance']['value'] / 1000
-                    return round(distancia_km, 1)
+            if data.get("status") == "OK":
+                element = data["rows"][0]["elements"][0]
+                if element.get("status") == "OK":
+                    distance_km = element["distance"]["value"] / 1000
+                    return round(distance_km, 1)
     except Exception as e:
-        print(f"Erro: {e}")
-    
+        logger.error("Google API error: %s", e)
+
     return None

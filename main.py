@@ -1,7 +1,11 @@
+import logging
+
 import pandas as pd
 
 from database import batch_update_distances, fetch_pending, get_connection, get_db_config
-from googletools import buscar_google_maps
+from googletools import get_distance_from_google
+
+logger = logging.getLogger(__name__)
 
 VERSION = "ßeta"
 CSV_PATH = "distancias.csv"
@@ -56,14 +60,14 @@ def append_to_cache(
 
 
 def run():
-    print(f"Distance-Updater {VERSION}")
+    logger.info("Distance-Updater %s", VERSION)
 
     config = get_db_config()
     conn = get_connection(config)
 
     df = load_distances_cache(CSV_PATH)
     pending = fetch_pending(conn)
-    print(f"Found {len(pending)} pending records")
+    logger.info("Found %d pending records", len(pending))
 
     updates: list[tuple[int, int]] = []
 
@@ -77,7 +81,7 @@ def run():
         dist_km = get_distance_from_cache(df, route_key)
 
         if dist_km is None:
-            dist_km = buscar_google_maps(
+            dist_km = get_distance_from_google(
                 row["origem"], row["uf_origem"], row["destino"], row["uf_destino"]
             )
             if dist_km is not None:
@@ -89,16 +93,20 @@ def run():
             final = calculate_final_distance(dist_km)
             updates.append((final, row["id"]))
         else:
-            print(f"Could not get distance for {route_key}")
+            logger.warning("Could not get distance for %s", route_key)
 
     if updates:
         batch_update_distances(conn, updates)
-        print(f"Updated {len(updates)} records")
+        logger.info("Updated %d records", len(updates))
     else:
-        print("No updates needed")
+        logger.info("No updates needed")
 
     conn.close()
 
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+    )
     run()
