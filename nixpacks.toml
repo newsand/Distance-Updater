@@ -1,5 +1,14 @@
+[variables]
+PYTHONUNBUFFERED = "1"
+
 [phases.setup]
-nixPkgs = ["python313"]
+nixPkgs = ["python314", "uv"]
+
+[phases.install]
+dependsOn = ["setup"]
+cmds = [
+    "uv sync --frozen --no-dev",
+]
 
 [start]
-cmd = "python main.py"
+cmd = "uv run python -m src.main daemon"

@@ -7,3 +7,5 @@ nao duplique linhas. nao altere nada que exista neste momento
 quaquer insercao deve ser verificada. caso exista apenas skip
 pode usar google tools a vontade para buscar distancias
 use paralelismo/sync para requisicoes se nao vai demorar eternamente
+
+header oficial  do arquivo csv cidade_origem,uf_origem,cidade_destino,uf_destino,distancia_km,fonte
