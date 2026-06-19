@@ -1,0 +1,13 @@
+.venv
+.git
+.cursor
+.understand-anything
+graphify-out
+__pycache__
+*.py[cod]
+.pytest_cache
+.mypy_cache
+.ruff_cache
+htmlcov
+.coverage
+.env
