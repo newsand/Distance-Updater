@@ -11,4 +11,4 @@ cmds = [
 ]
 
 [start]
-cmd = "uv run python -m src.main daemon"
+cmd = "uv run python -m main.py"
