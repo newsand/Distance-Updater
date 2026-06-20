@@ -1,4 +1,6 @@
 import logging
+import os
+import time
 
 import pandas as pd
 
@@ -109,4 +111,12 @@ if __name__ == "__main__":
         level=logging.INFO,
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     )
-    run()
+    poll_interval_minutes = int(os.getenv("POLL_INTERVAL_MINUTES", "1"))
+    poll_interval_seconds = poll_interval_minutes * 60
+    logger.info("Daemon started; poll interval %d minute(s)", poll_interval_minutes)
+    while True:
+        try:
+            run()
+        except Exception:
+            logger.exception("cycle failed")
+        time.sleep(poll_interval_seconds)
